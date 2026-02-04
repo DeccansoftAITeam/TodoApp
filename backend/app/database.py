@@ -1,3 +1,23 @@
+"""
+Database configuration and session management module.
+
+This module handles all database-related configuration including connection
+strings, engine creation, session management, and database initialization.
+It uses SQLAlchemy for ORM functionality and connects to a SQL Server database.
+
+Attributes:
+    master_connection_string (str): Connection string for SQL Server master database.
+    connection_string (str): Connection string for the TodoDB database.
+    DATABASE_URL (str): SQLAlchemy database URL with ODBC driver.
+    engine (Engine): SQLAlchemy engine instance for database operations.
+    SessionLocal (sessionmaker): Factory for creating database sessions.
+    Base (DeclarativeMeta): Base class for SQLAlchemy models.
+
+Functions:
+    ensure_database_exists: Creates the TodoDB database if it doesn't exist.
+    get_db: Dependency function that provides database sessions to endpoints.
+"""
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -20,8 +40,31 @@ connection_string = (
     "Trusted_Connection=yes;"
 )
 
-# Function to ensure database exists
 def ensure_database_exists():
+    """
+    Ensure that the TodoDB database exists, creating it if necessary.
+
+    This function connects to the SQL Server master database and checks if
+    the TodoDB database exists. If it doesn't exist, the function creates it.
+    This is typically called during application startup.
+
+    Raises:
+        Exception: If there's an error connecting to SQL Server or creating
+                   the database. The exception is caught and logged.
+
+    Examples:
+        >>> ensure_database_exists()
+        Database 'TodoDB' already exists
+
+        >>> # Or if database doesn't exist
+        >>> ensure_database_exists()
+        Database 'TodoDB' created successfully
+
+    Notes:
+        - Requires SQL Server to be running on localhost\\SQLEXPRESS
+        - Uses Windows Authentication (Trusted_Connection)
+        - Errors are printed but don't stop execution
+    """
     try:
         # Connect to master database
         conn = pyodbc.connect(master_connection_string)
@@ -52,8 +95,28 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Create Base class
 Base = declarative_base()
 
-# Dependency to get DB session
 def get_db():
+    """
+    Provide a database session to API endpoints.
+
+    This function is a dependency that creates a new SQLAlchemy session
+    for each request and ensures it's properly closed after the request
+    is completed. It uses FastAPI's dependency injection system.
+
+    Yields:
+        Session: A SQLAlchemy database session instance.
+
+    Examples:
+        >>> from fastapi import Depends
+        >>> @app.get("/todos")
+        >>> def get_todos(db: Session = Depends(get_db)):
+        >>>     return db.query(Todo).all()
+
+    Notes:
+        - The session is automatically committed if no exceptions occur
+        - The session is always closed in the finally block
+        - Should be used with FastAPI's Depends() for dependency injection
+    """
     db = SessionLocal()
     try:
         yield db
