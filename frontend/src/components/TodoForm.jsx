@@ -1,9 +1,30 @@
+/**
+ * @fileoverview TodoForm component - Form for creating new todos.
+ * @module TodoForm
+ */
+
 import { useState } from 'react';
 
+/**
+ * TodoForm component - Provides a form interface for creating new todos.
+ * Manages form state and validation before submitting to parent component.
+ * 
+ * @param {Object} props - Component props
+ * @param {Function} props.onSubmit - Callback function called when form is submitted
+ * @returns {JSX.Element} The todo creation form
+ */
 function TodoForm({ onSubmit }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
+  /**
+   * Handles form submission.
+   * Validates that title is not empty before calling onSubmit callback.
+   * Clears form fields after successful submission.
+   * 
+   * @param {React.FormEvent<HTMLFormElement>} e - The form event
+   * @returns {void}
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
     if (title.trim()) {

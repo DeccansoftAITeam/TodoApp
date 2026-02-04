@@ -1,23 +1,60 @@
+/**
+ * @fileoverview TodoItem component - Displays and manages individual todo items.
+ * @module TodoItem
+ */
+
 import { useState } from 'react';
 
+/**
+ * TodoItem component - Renders a single todo item with edit, delete, and complete functionality.
+ * Supports inline editing mode with save/cancel actions.
+ * 
+ * @param {Object} props - Component props
+ * @param {Object} props.todo - The todo object to display
+ * @param {number|string} props.todo.id - Unique identifier for the todo
+ * @param {string} props.todo.title - Title of the todo
+ * @param {string} [props.todo.description] - Optional description of the todo
+ * @param {boolean} props.todo.is_completed - Completion status of the todo
+ * @param {string} props.todo.created_at - ISO timestamp of when todo was created
+ * @param {Function} props.onUpdate - Callback function to update the todo
+ * @param {Function} props.onDelete - Callback function to delete the todo
+ * @returns {JSX.Element} The todo item component
+ */
 function TodoItem({ todo, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
   const [description, setDescription] = useState(todo.description || '');
 
+  /**
+   * Toggles the completion status of the todo.
+   * @returns {void}
+   */
   const handleToggleComplete = () => {
     onUpdate(todo.id, { is_completed: !todo.is_completed });
   };
 
+  /**
+   * Enters edit mode for the todo item.
+   * @returns {void}
+   */
   const handleEdit = () => {
     setIsEditing(true);
   };
 
+  /**
+   * Saves the edited todo and exits edit mode.
+   * @returns {void}
+   */
   const handleSave = () => {
     onUpdate(todo.id, { title, description });
     setIsEditing(false);
   };
 
+  /**
+   * Cancels editing and reverts changes.
+   * Resets local state to original todo values and exits edit mode.
+   * @returns {void}
+   */
   const handleCancel = () => {
     setTitle(todo.title);
     setDescription(todo.description || '');
