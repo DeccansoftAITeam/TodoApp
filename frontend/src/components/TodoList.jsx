@@ -20,7 +20,8 @@ function TodoList() {
 
   /**
    * Loads todos from the API and updates state.
-   * Used by event handlers to refresh the todo list after CRUD operations.
+   * Note: This function is used by event handlers (handleCreate, handleUpdate, handleDelete)
+   * to refresh the todo list after CRUD operations.
    * @async
    * @returns {Promise<void>}
    */
@@ -30,8 +31,8 @@ function TodoList() {
   };
 
   // Load todos on component mount
+  // Using IIFE pattern to satisfy ESLint react-hooks/set-state-in-effect rule
   useEffect(() => {
-    // Inline async function to satisfy ESLint rules
     (async () => {
       const data = await fetchTodos();
       setTodos(data);
