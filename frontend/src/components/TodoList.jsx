@@ -20,6 +20,7 @@ function TodoList() {
 
   /**
    * Loads todos from the API and updates state.
+   * Used by event handlers to refresh the todo list after CRUD operations.
    * @async
    * @returns {Promise<void>}
    */
@@ -30,11 +31,11 @@ function TodoList() {
 
   // Load todos on component mount
   useEffect(() => {
-    const initializeTodos = async () => {
+    // Inline async function to satisfy ESLint rules
+    (async () => {
       const data = await fetchTodos();
       setTodos(data);
-    };
-    initializeTodos();
+    })();
   }, []);
 
   /**
