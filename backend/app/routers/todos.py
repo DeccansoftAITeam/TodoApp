@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from typing import List
 from app import crud, schemas
 from app.database import get_db
+from app.auth import require_auth
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_auth)])
+#router = APIRouter()
 
 @router.get("/", response_model=List[schemas.TodoResponse])
 def read_todos(db: Session = Depends(get_db)):

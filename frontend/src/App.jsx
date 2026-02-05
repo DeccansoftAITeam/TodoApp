@@ -1,14 +1,27 @@
+import { useState, useEffect } from 'react'
 import TodoList from './components/TodoList'
+import Login from './components/Login'
 import './App.css'
 
 function App() {
-  return (
-    <div>
-      <h1>This is a demo</h1>
-      <TodoList />
-      <h2>Footer</h2>
-    </div>
-  )
+  const [token, setToken] = useState(null)
+
+  useEffect(() => {
+    const t = localStorage.getItem('token')
+    setToken(t)
+  }, [])
+
+  const handleLogin = () => {
+    const t = localStorage.getItem('token')
+    setToken(t)
+  }
+
+  if (!token) {
+    //Not Authorized
+    return <Login onLogin={handleLogin} />
+  }
+  //Authorized
+  return (<TodoList />)
 }
 
 export default App
